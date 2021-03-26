@@ -8,6 +8,8 @@ class character:
     def is_dead(self):
         if self.health < 0:
             return True
+    def get_level(self):
+        return self.level
 
 class item:
     def __init__(self, type, attack, defense, luck):
@@ -15,3 +17,7 @@ class item:
         self.attack = attack
         self.defense = defense
         self.luck = luck
+
+
+def start():
+    player = character(name, strength, health, level)
