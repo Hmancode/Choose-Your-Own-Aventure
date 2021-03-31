@@ -2,21 +2,22 @@ import sys
 from time import sleep
 
 
-def game(player, characters, items):
+def game(player, characters, items, game):
     intro(player)
-    paths_0(player, items)
+    paths_0(player, characters, items, game)
 
 def intro(player):
     write_file('intro_text.txt')
     player.name = input(" ... What is your name? ")
 
-def paths_0(player, items):
+def paths_0(player, characters, items, game):
     write_string("Hey, %s!\n" % player.name)
     write_file('paths_0.txt')
-    options = [items['sword'].name, items['sheild'].name, items['apple'].name]
+    options = [items['sword'].name, items['sheild'].name, items['crystal'].name]
     prep = "What item would you like to have?"
-    thing = choice(prep, options)
-    write_string("You now have a %s -- Luck: %i" % (thing, items[thing].luck))
+    player.inventory_add(items[choice(prep, options)])
+    player.inventory_edit()
+
 
 
 def choice(prep, options):
