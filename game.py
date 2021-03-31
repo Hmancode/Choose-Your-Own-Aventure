@@ -2,9 +2,24 @@ import story
 
 def start():
     player = character('name', 1, 1, 0, 5, 0)
-    #story.game(player)
-    print("\n ... \n")
-    player.level_up()
+    items = define_items()
+    characters = define_characters()
+    story.game(player, characters, items)
+
+
+def define_items():
+    items = {
+        "sword":item("Sword", 'weapon', 2, 4, 1, 1),
+        "sheild":item("Sheild", 'weapon', 0, 10, 3, 2),
+        "apple":item("Apple", 'food', 0, 0, 9, 5),
+    }
+    return items
+
+def define_characters():
+    characters = {
+        "meanie":character("Meanie", 20, 10, 3, 2, 0)
+    }
+    return characters
 
 class character:
     def __init__(self, name, strength, health, level, level_stats_base, xp):
@@ -30,11 +45,14 @@ class character:
         self.health = self.level * self.level_stats_base
         print("*Strength: %i --- Health: %i*" % (self.strength, self.health))
 class item:
-    def __init__(self, type, attack, defense, luck, xp_bonus):
+    def __init__(self, name, type, attack, defense, luck, xp_bonus):
+        self.name = name
         self.type = type
         self.attack = attack
         self.defense = defense
         self.luck = luck
         self.xp_bonus = xp_bonus
+
+#Make a weapon subclass of Item
 
 start()
