@@ -2,22 +2,24 @@ import sys
 from time import sleep
 
 
-def game(player, characters, items, game):
+def game(player, characters, items):
     intro(player)
-    paths_0(player, characters, items, game)
+    paths_0(player, characters, items)
 
 def intro(player):
     write_file('intro_text.txt')
     player.name = input(" ... What is your name? ")
 
-def paths_0(player, characters, items, game):
+def paths_0(player, characters, items):
     write_string("Hey, %s!\n" % player.name)
     write_file('paths_0.txt')
-    options = [items['sword'].name, items['sheild'].name, items['crystal'].name]
+    options = [items['sword'].name, items['gator tooth'].name, items['crystal'].name]
     prep = "What item would you like to have?"
     player.inventory_add(items[choice(prep, options)])
-    player.inventory_edit()
-
+    player.inventory_add(items[choice(prep, options)])
+    characters['meanie'].inventory_add(items["sheild"])
+    winner = battle(player, characters['meanie'], 2)
+    write_string("%s!!! Good Job" % winner.name)
 
 
 def choice(prep, options):
@@ -35,6 +37,10 @@ def choice(prep, options):
         else:
             write_string('Please input a vaild argument --- ')
     return choice
+
+def battle(side1, side2, side_2_heals_at):
+    from game import battle as battle_ver1
+    return battle_ver1(side1, side2, side_2_heals_at)
 
 def write_string(text):
     for line in text:
