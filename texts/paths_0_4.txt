@@ -1,0 +1,16 @@
+You decide to go to the blacksmith
+
+You walk past the housing of guards and servants to the throne.
+When you get to the blacksmith, the door is already open and you walk right in.
+The blacksmith, Alder, looks up at you as if he was expecting you.
+"So, you today? I was expecting someone," he says, "Your weapons and armor gone?"
+
+You respond, "Yes, how di-"
+
+"You're the seventh one this week. There seems to be a bandit targeting the guards.
+Unfortuantily, I cannot replace your weapons any time soon. You will need to find armor nad weapons yourself."
+
+You leave
+
+Even though you do not have weapons or armor, the castle needs to be defended.
+Although, spending the time looking for new gear may also be useful.

@@ -1,4 +1,4 @@
-import sys, random
+import sys, random, os
 from time import sleep
 
 
@@ -6,14 +6,20 @@ def start():
     player = character('name', {}, 1, 1, False, 0, 5, True, 5, 0)
     items = define_items()
     characters = define_characters()
+    setup(player, characters, items)
+    os.system('cls' if os.name == 'nt' else 'clear')
     return player, characters, items
 
+def setup(player, characters, items):
+    characters['guard'].inventory_add(items['guard_sword'])
+    return
 
 def define_items():
     items = {
-        "sword":item("Sword", 'weapon', 7, 4, 1, 1),
+        "test":item("test", "weapon", 10, 2, 4, 80),
+        "guard_sword":item("guard_sword", 'weapon', 5, 2, 1, 1),
         "sheild":item("Sheild", 'weapon', 0, 3, 3, 2),
-        "gator tooth":item("Gator Tooth", 'weapon', 4, 0, 7, 3),
+        "gator tooth":item("Gator Tooth", 'weapon', 4, 0, 7, 6),
         "crystal":item("Crystal", 'artifact', 0, 0, 9, 5),
     }
     return items
@@ -21,7 +27,8 @@ def define_items():
 def define_characters():
     characters = {
         "meanie":character("Meanie", {}, 1, 10, False, 3, 2, False, 5, 5),
-    }
+        "guard":character('Guard', {}, 1, 1, False, 2, 5, False, 4, 8)
+        }
     return characters
 
 class character:
@@ -72,7 +79,7 @@ class character:
         self.inventory_print()
         return
     def inventory_print(self):
-        print("\nInventory:")
+        print("\n{}'s Inventory:".format(self.name))
         i = 1
         for item in self.inventory:
             print("{} - {}".format(i, self.inventory[item].name))
@@ -159,7 +166,7 @@ def battle(side_1, side_2, side_2_heals_at):
     defense_2 = side_2.defense_val()
     go = True
     while go:
-        status, defense = battle_turn(side_1, side_2, 0, defense_1, defense_2)
+        status, defense = battle_turn(side_1, side_2, side_2_heals_at, defense_1, defense_2)
         if status == 'attack':
             defense_2 = defense
             if defense < 1:
@@ -170,7 +177,7 @@ def battle(side_1, side_2, side_2_heals_at):
         if status == 'heal':
             defense_1 = defense
         
-        status, defense = battle_turn(side_2, side_1, 0, defense_2, defense_1)
+        status, defense = battle_turn(side_2, side_1, side_2_heals_at, defense_2, defense_1)
         if status == 'attack':
             defense_1 = defense
             if defense < 1:
@@ -181,14 +188,17 @@ def battle(side_1, side_2, side_2_heals_at):
         if status == 'heal':
             defense_2 = defense
     write_string("\n%s has won!" % winner.name)
+    if loser.is_player:
+        end()
     winner.battle_xp(loser)
     winner.update_stats()
     loser.is_dead = True
+
     return winner
 
 def battle_turn(active, idel, heal_at, defense_active, defense_idel):
     while active.is_player:
-        write_string("What would you like to do? [Attack, Heal]:")
+        write_string("\nWhat would you like to do? [Attack, Heal]:")
         choice = input(" ").lower()
         if choice == "attack":
             defense_idel = attack(active, idel, defense_idel)
@@ -200,7 +210,7 @@ def battle_turn(active, idel, heal_at, defense_active, defense_idel):
             write_string("Please enter a valid input. ")
             continue
     if not active.is_player:
-        if defense_active > heal_at:           
+        if defense_active > heal_at:     #Somthing does not work here      
             defense_idel = attack(active, idel, defense_idel)
             return 'attack', defense_idel
         else:
@@ -210,10 +220,18 @@ def battle_turn(active, idel, heal_at, defense_active, defense_idel):
 
 def attack(attack_side, defend_side, defense):
     flavor_text = [
-        "\n%s's might strikes %s"
+        "%s's might strikes %s",
+        "%s lundges at %s",
+        "%s throws some spicy damage at %s",
+        "%s practices the act of attacking, to %s's expense,",
+        '%s goes all "KAPOW" and stuff to %s'
     ]
     flavor_text2 = [
-        "%s's might was too much for %s to handle."
+        "%s's might was too much for %s to handle.",
+        "%s has obliterated %s.",
+        "%s will haunt %s in the afterlife too.",
+        "%s shows %s who's boss",
+        "%s treats %s like Ceasar"
     ]
     write_string(random.choice(flavor_text) % (attack_side.name, defend_side.name))
     power = attack_side.attack_val()
@@ -224,24 +242,24 @@ def attack(attack_side, defend_side, defense):
         write_string("\n%s has died.\n" % (defend_side.name))
         return 0
     else:
-        write_string("%s's defensive strength is now: %i. \n" % (defend_side.name, defense))
+        write_string("%s's defensive strength is now: %i\n" % (defend_side.name, defense))
     if attack_side.battle_luck() > defend_side.battle_luck():
         if attack_side.battle_luck() > defend_side.battle_luck():
                 power = attack_side.attack_val()
                 defense = defense - power
-                write_string("Luckily enough, %s wins a bonus attack dealing %i damage " % (attack_side.name, power,))
+                write_string("Luckily enough, %s wins a bonus attack dealing %i damage. " % (attack_side.name, power,))
                 if defense < 1:
                     write_string(random.choice(flavor_text2) % (attack_side.name, defend_side.name))
                     write_string("\n%s has died." % (defend_side.name))
                     return 0
                 else:
-                    write_string("\n%s's defensive strength is now: %i" % (defend_side.name, defense))
+                    write_string("\n%s's defensive strength is now: %i\n" % (defend_side.name, defense))
     return defense
 
 def heal(side, defense):
     heal_val = side.battle_luck() * side.health
     defense = defense + heal_val
-    write_string("\n%s has healed %i. %s's defense is now %i" % (side.name, heal_val, side.name, defense))
+    write_string("%s has healed %i. %s's defensive strength is now %i\n" % (side.name, heal_val, side.name, defense))
     return defense
 
 
@@ -273,18 +291,25 @@ class game:
         #read how game works
         #character info
 
+def end():
+    write_string("\n\n\nGAME OVER")
+    exit()
+
+
+
+
 
 def write_string(text):
     for line in text:
             for char in line:
-                sleep(.06) #Should be .6 - Lowered for decoding
+                sleep(.0001) #Should be .6 - Lowered for decoding
                 sys.stdout.write(char)
                 sys.stdout.flush()
 def write_file(file_name):
     with open(file_name, 'r') as text:
         for line in text:
             for char in line:
-                sleep(.06) #Should be .6 - Lowered for decoding
+                sleep(.0001) #Should be .6 - Lowered for decoding
                 sys.stdout.write(char)
                 sys.stdout.flush()
     print(' ')
